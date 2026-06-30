@@ -802,7 +802,7 @@
 </footer>
 
 <script>
-  // ─── COMPLETE ROUTE DATABASE (60+ routes) ──────────────────────
+  // ─── COMPLETE ROUTE DATABASE (ALL 60+ ROUTES) ──────────────────
   const ROUTES = [
     // 01 Series
     { code: '01B', zone: '01', name: 'Urgello ↔ Colon ↔ Pier Area', desc: 'via Leon Kilat, Sanciangko', stops: ['Urgello','SWU','Leon Kilat St','Sanciangko','Metro Colon','Pier Area','Pier 1','Pier 4'] },
@@ -811,6 +811,7 @@
     { code: '01H', zone: '01', name: 'Sambag II (SWU) ↔ SM City Cebu', desc: 'via Taboan, Colon, MJ Cuenco', stops: ['Sambag II','SWU','Taboan Market','Colon St','MJ Cuenco','SM City Cebu'] },
     { code: '01I', zone: '01', name: 'Sambag II (SWU) ↔ SM City ↔ Ayala', desc: 'Direct main loop', stops: ['Sambag II','SWU','Colon St','SM City Cebu','Ayala Center Cebu'] },
     { code: '01K', zone: '01', name: 'Urgello ↔ Parkmall (Free Ride)', desc: 'via Colon, SM, North Bus Terminal — LIBRENG SAKAY', stops: ['Urgello','Colon St','SM City Cebu','North Bus Terminal','Parkmall Mandaue'] },
+
     // 02-03 Series
     { code: '02B', zone: '02-03', name: 'South Bus Terminal ↔ Pier Area', desc: 'via CCMC, Panganiban, Colon, Piers 1–4', stops: ['South Bus Terminal','CCMC','Panganiban St','Colon St','Pier 1','Pier 3','Pier 4'] },
     { code: '03A', zone: '02-03', name: 'Mabolo (Panagdait) ↔ Carbon Market', desc: 'via MJ Cuenco, Victoria Plaza', stops: ['Mabolo Panagdait','Victoria Plaza','MJ Cuenco','Caretta','Carbon Market'] },
@@ -820,6 +821,7 @@
     { code: '03K', zone: '02-03', name: 'Mabolo ↔ Ayala ↔ Colon ↔ SM City', desc: 'Inter-mall connector', stops: ['Mabolo','Ayala Center Cebu','Colon St','SM City Cebu'] },
     { code: '03L', zone: '02-03', name: 'Mabolo (Luyo/Cabantan) ↔ Carbon Market', desc: 'Local Cabantan bypass', stops: ['Cabantan St','Mabolo Luyo','MJ Cuenco','Carbon Market'] },
     { code: '03Q', zone: '02-03', name: 'Ayala Center ↔ SM City Cebu Loop', desc: 'Direct mall-to-mall via Juan Luna Ave', stops: ['Ayala Center Cebu','Juan Luna Ave','SM City Cebu'] },
+
     // 04-05 Series
     { code: '04A', zone: '04-05', name: 'Lahug ↔ Carbon Market', desc: 'via Juana Osmeña, Ramos St, Fuente', stops: ['Lahug','JY Square','Juana Osmeña','F. Ramos St','Fuente Osmeña','Carbon Market'] },
     { code: '04B', zone: '04-05', name: 'Lahug (Camp Lapu-Lapu) ↔ Carbon Market', desc: 'via JY Square, Capitol, Jones Ave', stops: ['Camp Lapu-Lapu','JY Square','Gorordo Ave','Capitol Site','Jones Ave','Carbon Market'] },
@@ -829,6 +831,7 @@
     { code: '04L', zone: '04-05', name: 'Lahug (JY Square) ↔ SM City Cebu', desc: 'via IT Park, Ayala Center, Juan Luna Ave', stops: ['Lahug JY Square','IT Park','Ayala Center Cebu','Juan Luna Ave','SM City Cebu'] },
     { code: '04M', zone: '04-05', name: 'Lahug ↔ Ayala Center', desc: 'via UP Cebu, JY Square, Escario', stops: ['Lahug','JY Square','UP Cebu','Escario St','Ayala Center Cebu'] },
     { code: '05A', zone: '04-05', name: 'Englis ↔ Carbon Market', desc: 'via V. Rama Ave', stops: ['Englis','V. Rama Ave','Guadalupe Bridge','Calamba','Carbon Market'] },
+
     // 06-07 Series
     { code: '06A', zone: '06-07', name: 'Guadalupe ↔ Carbon Market', desc: 'via V. Rama, Tres de Abril, Taboan', stops: ['Guadalupe Church','V. Rama Ave','Tres de Abril','Taboan Market','Carbon Market'] },
     { code: '06B', zone: '06-07', name: 'Guadalupe ↔ Carbon Market', desc: 'via M. Velez, Capitol, Fuente, Osmeña Blvd', stops: ['Guadalupe','M. Velez St','Capitol Site','Fuente Osmeña','Osmeña Blvd','Carbon Market'] },
@@ -838,6 +841,7 @@
     { code: '06K', zone: '06-07', name: 'Napo ↔ Guadalupe ↔ Carbon Market', desc: 'Upland Napo feeder', stops: ['Napo Upland','Guadalupe Church','M. Velez St','Fuente Osmeña','Carbon Market'] },
     { code: '07B', zone: '06-07', name: 'Banawa ↔ Carbon Market', desc: 'via Duterte St, B. Rodriguez, Fuente, Jones Ave', stops: ['Banawa','Duterte St','B. Rodriguez St','Fuente Osmeña','Jones Ave','Carbon Market'] },
     { code: '07D', zone: '06-07', name: 'Banawa ↔ Carbon Market', desc: 'via V. Rama, Downtown loop', stops: ['Banawa','V. Rama Ave','Calamba St','Colon St','Carbon Market'] },
+
     // 08-11 Series
     { code: '08F', zone: '08-11', name: 'Alumnos (Mambaling) ↔ Colon ↔ SM City', desc: 'via C. Padilla', stops: ['Alumnos Mambaling','C. Padilla St','Carlock St','Colon St','MJ Cuenco','SM City Cebu'] },
     { code: '08G', zone: '08-11', name: 'Alumnos ↔ Colon', desc: 'via C. Padilla, Tupas St, Manalili', stops: ['Alumnos','C. Padilla St','Tupas St','Manalili St','Metro Colon'] },
@@ -852,6 +856,7 @@
     { code: '10M', zone: '08-11', name: 'Bulacao ↔ Colon ↔ SM City', desc: 'via Mambaling, MJ Cuenco', stops: ['Bulacao','Mambaling','N. Bacalso','Colon St','MJ Cuenco','SM City Cebu'] },
     { code: '11A', zone: '08-11', name: 'Inayawan ↔ Colon', desc: 'via Inayawan Market, C. Padilla, Magallanes', stops: ['Inayawan Market','C. Padilla St','Pasil','Magallanes St','Colon St'] },
     { code: '11D', zone: '08-11', name: 'Inayawan ↔ Colon ↔ Manalili', desc: 'via Pardo, N. Bacalso, Tabuan', stops: ['Inayawan','Pardo','N. Bacalso','Tabuan Market','Manalili St','Colon St'] },
+
     // 12 Series
     { code: '12B', zone: '12', name: 'Labangon ↔ Colon', desc: 'via Katipunan St, USC Main', stops: ['Labangon','Katipunan St','J. Alcantara','P. Del Rosario','USC Main','Colon St'] },
     { code: '12C', zone: '12', name: 'Labangon ↔ Colon Loop', desc: 'via Tres de Abril', stops: ['Labangon','Katipunan St','Tres de Abril','Sanciangko','Colon St Loop'] },
@@ -861,6 +866,7 @@
     { code: '12K', zone: '12', name: 'Labangon ↔ Ayala Center', desc: 'via A. Lopez, B. Rodriguez, Gen. Maxilom', stops: ['Labangon A. Lopez','B. Rodriguez St','VSMMC','Gen. Maxilom','Ayala Center Cebu'] },
     { code: '12L', zone: '12', name: 'Labangon ↔ Ayala Center', desc: 'via Katipunan, J. Alcantara, Escario', stops: ['Labangon','Katipunan St','J. Alcantara','Escario St','Ayala Center Cebu'] },
     { code: '12M', zone: '12', name: 'Labangon ↔ Colon ↔ Magallanes', desc: 'via Legaspi St', stops: ['Labangon','Katipunan','Sanciangko','Legaspi St','Magallanes St','Colon St'] },
+
     // 13-17 Series
     { code: '13A', zone: '13-17', name: 'Talamban ↔ Capitol ↔ USJR', desc: 'via Banilad, Gov. Cuenco', stops: ['Talamban Tintay','Banilad','Gov. Cuenco','Capitol Site','USJR Main'] },
     { code: '13B', zone: '13-17', name: 'Talamban ↔ Carbon Market', desc: 'via Echavez St', stops: ['Talamban','Banilad','Gov. Cuenco','Echavez St','Ramos St','Carbon Market'] },
@@ -873,6 +879,7 @@
     { code: '17D', zone: '13-17', name: 'Apas ↔ Lahug ↔ Carbon Market', desc: 'via Escario St', stops: ['Apas','Lahug JY','Escario St','Fuente Osmeña','Carbon Market'] },
     { code: '62B', zone: '13-17', name: 'Pit-os ↔ Talamban ↔ Colon', desc: 'via Banilad Flyover, Sikatuna', stops: ['Pit-os','Talamban','Banilad Flyover','Sikatuna St','Colon St'] },
     { code: '62C', zone: '13-17', name: 'Pit-os ↔ Talamban ↔ Carbon Market', desc: 'via Echavez St', stops: ['Pit-os','Talamban','Gov. Cuenco','Echavez St','Downtown','Carbon Market'] },
+
     // 20+ Series Inter-City
     { code: '20A', zone: '20+', name: 'Mandaue (Pacific Mall) ↔ Ayala Center', desc: 'via A.S. Fortuna, Subangdaku', stops: ['Pacific Mall','A.S. Fortuna','Subangdaku','Hernan Cortes','Ayala Center Cebu'] },
     { code: '20B', zone: '20+', name: 'Mandaue ↔ Ayala Center', desc: 'via Mabolo, Logarta St', stops: ['Mandaue Centro','Logarta St','Subangdaku','Mabolo','Ayala Center Cebu'] },
@@ -1018,17 +1025,15 @@
     // Update progress line
     const progressLine = document.getElementById('mapProgressLine');
     if(progressLine && totalStops > 1) {
-      const container = progressLine.parentElement;
-      const containerWidth = container.clientWidth - 60;
-      const leftPct = (start / (totalStops - 1)) * 100;
-      const widthPct = ((end - start) / (totalStops - 1)) * 100;
-      progressLine.style.left = `calc(30px + ${leftPct * 0.85}%)`;
-      progressLine.style.width = `calc(${widthPct * 0.85}%)`;
+      const leftPct = (start / (totalStops - 1)) * 85;
+      const widthPct = ((end - start) / (totalStops - 1)) * 85;
+      progressLine.style.left = `calc(30px + ${leftPct}%)`;
+      progressLine.style.width = `calc(${widthPct}%)`;
     }
 
-    // Math for fare – using dynamic km per stop
-    let kmPerStop = 1.2; // default for city routes
-    if (route.zone === '20+') kmPerStop = 2.5; // inter-city longer distances
+    // Fare math with zone-based km per stop
+    let kmPerStop = 1.2;
+    if (route.zone === '20+') kmPerStop = 2.5;
 
     const stopDiff = Math.abs(toIdx - fromIdx);
     const estimatedDistance = stopDiff * kmPerStop;
@@ -1040,7 +1045,6 @@
     if(estimatedDistance > 4.0) {
       finalRegular += (estimatedDistance - 4.0) * perKmRate;
     }
-    // Round to nearest 25 centavos (common in PH)
     finalRegular = Math.ceil(finalRegular * 4) / 4;
     const finalDiscounted = Math.ceil((finalRegular * 0.80) * 4) / 4;
 
@@ -1062,10 +1066,10 @@
     if(routeCode === '01K') {
       const now = new Date();
       const hour = now.getHours();
-      // Free ride hours: 6-9 AM or 5-8 PM
       const isFree = (hour >= 6 && hour < 9) || (hour >= 17 && hour < 20);
       if(isFree) {
         freeRideNote.classList.remove('hidden');
+        freeRideNote.textContent = '🕒 This route (01K) is currently within Libreng Sakay hours – enjoy your free ride!';
       } else {
         freeRideNote.classList.add('hidden');
       }
