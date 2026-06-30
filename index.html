@@ -265,7 +265,7 @@
     /* ── Home Grid ── */
     .feature-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 1rem;
       margin: 2rem 0;
     }
@@ -354,69 +354,81 @@
 
     .zone-pills { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.2rem; }
 
-    /* ── Chat ── */
-    .chat-win {
-      background: var(--surface);
+    /* ── Custom Map & Fare Interactive Features ── */
+    .map-container {
+      background: #11141c;
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
-    .chat-msgs {
-      height: 340px;
-      overflow-y: auto;
-      padding: 1.2rem;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
       display: flex;
       flex-direction: column;
-      gap: 0.8rem;
-    }
-    .chat-msgs::-webkit-scrollbar { width: 4px; }
-    .chat-msgs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-    .msg { display: flex; gap: 0.6rem; align-items: flex-start; }
-    .msg.user { flex-direction: row-reverse; }
-    .avatar {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      display: flex;
       align-items: center;
       justify-content: center;
-      font-family: 'Syne', sans-serif;
-      font-size: 0.6rem;
-      font-weight: 700;
+      min-height: 220px;
+      position: relative;
     }
-    .avatar.ai { background: var(--amber); color: #0d0f14; }
-    .avatar.user { background: var(--surface2); color: var(--muted); }
-    .bubble {
-      background: var(--surface2);
-      border-radius: 10px;
-      padding: 0.6rem 0.9rem;
-      font-size: 0.85rem;
-      line-height: 1.5;
-      max-width: 75%;
+    .map-graphic {
+      width: 100%;
+      max-width: 500px;
+      height: auto;
     }
-    .msg.user .bubble { border-radius: 10px 3px 10px 10px; }
-    .msg.ai .bubble { border-radius: 3px 10px 10px 10px; }
-    .chat-bar {
-      border-top: 1px solid var(--border);
-      padding: 0.7rem 1rem;
+    .map-nodes-container {
       display: flex;
-      gap: 0.6rem;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 540px;
+      margin-top: 1rem;
+      position: relative;
     }
-    .chat-bar input { flex: 1; margin: 0; }
-    .send-btn {
+    .map-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 2;
+    }
+    .map-dot {
+      width: 12px;
+      height: 12px;
+      background: var(--muted2);
+      border-radius: 50%;
+      border: 2px solid var(--bg);
+      transition: all 0.3s;
+    }
+    .map-node.active .map-dot {
       background: var(--amber);
-      color: #0d0f14;
-      border: none;
-      border-radius: 7px;
-      padding: 0 1.2rem;
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      font-size: 0.8rem;
-      cursor: pointer;
-      transition: background 0.15s;
+      box-shadow: 0 0 12px var(--amber);
+      transform: scale(1.2);
     }
-    .send-btn:hover { background: #e09720; }
+    .map-lbl {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.4rem;
+      text-align: center;
+      max-width: 80px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .map-line-back {
+      position: absolute;
+      top: 5px;
+      left: 10px;
+      right: 10px;
+      height: 2px;
+      background: var(--border);
+      z-index: 1;
+    }
+    .map-line-progress {
+      position: absolute;
+      top: 5px;
+      left: 10px;
+      width: 0%;
+      height: 2px;
+      background: var(--amber);
+      z-index: 1;
+      transition: width 0.4s ease;
+    }
 
     /* ── Policy Table ── */
     .fare-table {
@@ -481,8 +493,6 @@
       .card { padding: 1rem; }
       .zone-pills { gap: 0.3rem; }
       .btn-ghost { font-size: 0.7rem; padding: 0.3rem 0.7rem; }
-      .chat-msgs { height: 280px; padding: 0.8rem; }
-      .bubble { font-size: 0.8rem; }
     }
 
     @media (max-width: 480px) {
@@ -501,9 +511,8 @@
   <div class="logo" onclick="navigate('home')">Lugar<span>Lang</span></div>
   <div class="nav-links">
     <button class="nav-btn active" id="nav-home" onclick="navigate('home')">Home</button>
-    <button class="nav-btn" id="nav-fare" onclick="navigate('fare')">Fare</button>
-    <button class="nav-btn" id="nav-route" onclick="navigate('route')">Routes</button>
-    <button class="nav-btn" id="nav-chat" onclick="navigate('chat')">AI Chat</button>
+    <button class="nav-btn" id="nav-fare" onclick="navigate('fare')">Fare Calculator</button>
+    <button class="nav-btn" id="nav-route" onclick="navigate('route')">Routes &amp; Maps</button>
     <button class="nav-btn" id="nav-policy" onclick="navigate('policy')">Updates</button>
   </div>
 </nav>
@@ -514,36 +523,29 @@
     <div class="eyebrow">Metro Cebu • Updated 2026</div>
     <h1>Where are you <em>headed?</em></h1>
     <p class="lead">
-      <strong>LugarLang</strong> helps you navigate Cebu’s jeepney network with ease.  
-      Compute fares using the latest LTFRB rates, find the right route from over 60 lines,  
-      and ask our AI assistant — all in one place, in English or Bisaya.
+      <strong>LugarLang</strong> helps you navigate Cebu’s jeepney network with ease. 
+      Compute fares using the latest LTFRB rates and find the right route from over 60 paths instantly.
     </p>
 
     <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.2rem 1.5rem; margin-bottom:2rem;">
       <p style="color:var(--muted); font-size:0.9rem; line-height:1.7;">
-        <span style="font-weight:600; color:var(--text);">How it works:</span><br/>
-        • <strong>Fare Calculator</strong> – pick your vehicle type (traditional/modern), route, and stops.<br/>
-        • <strong>Route Finder</strong> – search by place, landmark, or route code.<br/>
-        • <strong>AI Chat</strong> – ask anything about fares, routes, or free ride programs.<br/>
-        • <strong>Updates</strong> – stay informed with official LTFRB fares and policy changes.
+        <span style="font-weight:600; color:var(--text);">Application Utilities:</span><br/>
+        • <strong>Fare Calculator</strong> – pick your vehicle type (traditional/modern), route, and target stops for precise pricing.<br/>
+        • <strong>Route Mapping</strong> – View interactive paths and stop landmarks across Cebu.<br/>
+        • <strong>Official Updates</strong> – Stay current with accurate LTFRB policies and active free ride maps.
       </p>
     </div>
 
     <div class="feature-grid">
       <div class="feat" onclick="navigate('fare')">
-        <div class="feat-icon"></div>
+        <div class="feat-icon">🎫</div>
         <div class="feat-title">Fare Calculator</div>
-        <div class="feat-desc">Compute traditional or modern jeepney fares with updated LTFRB rates.</div>
+        <div class="feat-desc">Compute traditional or modern jeepney metrics with current local rates.</div>
       </div>
       <div class="feat" onclick="navigate('route')">
-        <div class="feat-icon"></div>
-        <div class="feat-title">Route Finder</div>
-        <div class="feat-desc">Search 60+ Metro Cebu jeepney routes by name, code, or stop.</div>
-      </div>
-      <div class="feat" onclick="navigate('chat')">
-        <div class="feat-icon"></div>
-        <div class="feat-title">Ask AI</div>
-        <div class="feat-desc">Get instant answers about fares, routes, and free ride programs.</div>
+        <div class="feat-icon">📍</div>
+        <div class="feat-title">Route Finder &amp; Maps</div>
+        <div class="feat-desc">Search Metro Cebu lines with visual step indicators and landmark traces.</div>
       </div>
     </div>
 
@@ -564,25 +566,25 @@
 
   <!-- ═══════ FARE CALCULATOR ═══════ -->
   <section class="page" id="page-fare">
-    <div class="eyebrow">Fare Calculator</div>
+    <div class="eyebrow">Fare Engine</div>
     <h1>How much is the <em>fare?</em></h1>
-    <p class="lead">Select vehicle type, route, and stops to get an accurate estimate.</p>
+    <p class="lead">Select vehicle type, route, and stops to parse a clean distance-based invoice estimate.</p>
 
     <div class="card">
       <label>Vehicle Type</label>
       <div class="vtype-row">
         <div class="vtype-btn active" id="vt-trad" onclick="setVehicleType('trad')">
-          <div class="vt-label">Traditional</div>
+          <div class="vt-label">🛺 Traditional</div>
           <div class="vt-sub">₱14.00 base · ₱2.00/km</div>
         </div>
         <div class="vtype-btn" id="vt-mod" onclick="setVehicleType('mod')">
-          <div class="vt-label">Modern (MPUV)</div>
+          <div class="vt-label">🚌 Modern (MPUV)</div>
           <div class="vt-sub">₱17.00 base · ₱2.40/km</div>
         </div>
       </div>
 
       <div class="form-group">
-        <label>Route</label>
+        <label>Route Line</label>
         <select id="fareRoute" onchange="onRouteChange()">
           <option value="">— Select a route —</option>
         </select>
@@ -590,24 +592,34 @@
 
       <div id="stopSection" class="hidden">
         <div class="form-group">
-          <label>From (Origin)</label>
-          <select id="fromStop"><option value="">— Select —</option></select>
+          <label>From (Origin Location)</label>
+          <select id="fromStop" onchange="onStopSelectionChange()"><option value="">— Select —</option></select>
         </div>
         <div class="form-group">
-          <label>To (Destination)</label>
-          <select id="toStop"><option value="">— Select —</option></select>
+          <label>To (Destination Location)</label>
+          <select id="toStop" onchange="onStopSelectionChange()"><option value="">— Select —</option></select>
         </div>
+        
+        <!-- Live Map Interface Viewport -->
+        <label>Live Route View</label>
+        <div class="map-container">
+          <div class="map-line-back"></div>
+          <div class="map-line-progress" id="mapProgressLine"></div>
+          <div class="map-nodes-container" id="mapNodesWrapper">
+            <!-- Populated via Javascript dynamically -->
+          </div>
+        </div>
+
         <div class="form-group">
           <label class="flex gap-1" style="cursor:pointer; text-transform:none; font-weight:400; color:var(--text);">
-            <input type="checkbox" id="discountToggle" style="accent-color:var(--amber); width:1rem; height:1rem;" />
-            Apply 20% discount (Student / Senior / PWD)
+            <input type="checkbox" id="discountToggle" onchange="calculateLiveFare()" style="accent-color:var(--amber); width:1rem; height:1rem;" />
+            Apply 20% Regulatory Discount (Student / Senior / PWD)
           </label>
         </div>
-        <button class="btn-primary" onclick="computeFare()">Compute Fare →</button>
       </div>
 
       <div id="fareResult" class="hidden" style="margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
-        <div class="eyebrow" style="margin-bottom: 0.8rem;">Result</div>
+        <div class="eyebrow" style="margin-bottom: 0.8rem;">Computed Manifest</div>
         <div id="resultStrip" class="rstrip" style="border-radius:8px; overflow:hidden; margin-bottom:1rem;"></div>
         <div class="fare-result-grid">
           <div class="fare-box">
@@ -615,34 +627,51 @@
             <div class="fb-amt" id="regularFare">—</div>
           </div>
           <div class="fare-box highlight">
-            <div class="fb-lbl" id="discountLabel">Your Fare</div>
+            <div class="fb-lbl" id="discountLabel">Computed Total</div>
             <div class="fb-amt" id="discountedFare">—</div>
           </div>
         </div>
         <p id="distanceInfo" style="text-align:center; font-size:0.8rem; color:var(--muted); margin-top:0.8rem;"></p>
-        <div id="freeRideNote" class="hidden alert alert-green" style="margin-top:0.8rem;">This route is part of the Libreng Sakay program during peak hours!</div>
+        <div id="freeRideNote" class="hidden alert alert-green" style="margin-top:0.8rem;">This route is active within the Libreng Sakay peak hour framework!</div>
       </div>
     </div>
-    <p class="text-center" style="color:var(--muted2); font-size:0.75rem; margin-top:1rem;">* Estimates based on average stop spacing. Confirm with driver for exact fares.</p>
+    <p class="text-center" style="color:var(--muted2); font-size:0.75rem; margin-top:1rem;">* Calculations parse linear approximations. Match with actual driver conductors for precision.</p>
   </section>
 
-  <!-- ═══════ ROUTE FINDER ═══════ -->
+  <!-- ═══════ ROUTE FINDER & MAPS ═══════ -->
   <section class="page" id="page-route">
-    <div class="eyebrow">Route Finder</div>
-    <h1>Which <em>jeepney?</em></h1>
-    <p class="lead">Type a place, landmark, or route code to find the right jeepney line.</p>
+    <div class="eyebrow">Interactive Index</div>
+    <h1>Which <em>jeepney line?</em></h1>
+    <p class="lead">Input clean stop nodes, landmarks, or target jeep codes to search matching alignments.</p>
 
     <div class="card">
       <div class="srch-wrap">
-        <input type="text" id="routeSearch" placeholder="e.g. Lahug, SM, Ayala, Carbon, Mandaue, Talamban..." oninput="searchRoutes()" />
+        <input type="text" id="routeSearch" placeholder="e.g. Lahug, SM, Ayala, Carbon, Urgello, Pier..." oninput="searchRoutes()" />
       </div>
       <div id="routeResults"></div>
-      <p id="noResults" class="hidden text-center" style="padding:1.5rem 0; color:var(--muted);">No routes found. Try a different keyword.</p>
+      <p id="noResults" class="hidden text-center" style="padding:1.5rem 0; color:var(--muted);">No matching tracks logged. Broaden your search term.</p>
 
       <div id="routeDetail" class="hidden" style="margin-top:1.2rem; padding-top:1.2rem; border-top:1px solid var(--border);">
         <div class="eyebrow" id="detailCode"></div>
         <div id="detailStrip" class="rstrip" style="border-radius:8px; overflow:hidden; margin-bottom:0.6rem;"></div>
-        <p id="detailDesc" style="font-size:0.85rem; color:var(--muted);"></p>
+        <p id="detailDesc" style="font-size:0.85rem; color:var(--muted); margin-bottom:1rem;"></p>
+        
+        <!-- Track SVG Visual Map Mapbox -->
+        <div class="map-container" style="min-height:160px; background:#141822;">
+          <svg class="map-graphic" viewBox="0 0 400 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 30H380" stroke="#f5a623" stroke-width="3" stroke-dasharray="6 4" stroke-linecap="round"/>
+            <circle cx="20" cy="30" r="6" fill="#f5a623"/>
+            <circle cx="140" cy="30" r="4" fill="#e84a4a"/>
+            <circle cx="260" cy="30" r="4" fill="#e84a4a"/>
+            <circle cx="380" cy="30" r="6" fill="#4acb8a"/>
+          </svg>
+          <div style="display:flex; justify-content:space-between; width:100%; font-size:0.65rem; color:var(--muted); padding:0 10px;">
+            <span>🏁 Origin</span>
+            <span>📍 Internal Nodes</span>
+            <span>📍 Stopovers</span>
+            <span>🏁 Terminal</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -653,40 +682,8 @@
         <button class="btn-ghost" onclick="filterZone('01')">01 Sambag</button>
         <button class="btn-ghost" onclick="filterZone('02-03')">02–03 Pier/Mabolo</button>
         <button class="btn-ghost" onclick="filterZone('04-05')">04–05 Lahug</button>
-        <button class="btn-ghost" onclick="filterZone('06-07')">06–07 Guadalupe</button>
-        <button class="btn-ghost" onclick="filterZone('08-11')">08–11 South</button>
-        <button class="btn-ghost" onclick="filterZone('12')">12 Labangon</button>
-        <button class="btn-ghost" onclick="filterZone('13-17')">13–17 North</button>
-        <button class="btn-ghost" onclick="filterZone('20+')">20+ Inter-City</button>
       </div>
       <div id="zoneList"></div>
-    </div>
-  </section>
-
-  <!-- ═══════ AI CHAT ═══════ -->
-  <section class="page" id="page-chat">
-    <div class="eyebrow">AI Assistant</div>
-    <h1>Ask <em>LugarLang AI</em></h1>
-    <p class="lead">Ask in English or Bisaya – get instant answers about fares, routes, and free rides.</p>
-
-    <div class="chat-win">
-      <div class="chat-msgs" id="chatMessages">
-        <div class="msg ai">
-          <div class="avatar ai">AI</div>
-          <div class="bubble">Hi! I'm LugarLang AI. I can help with:<br/>• Jeepney fares (traditional &amp; modern)<br/>• Routes across Metro Cebu<br/>• Libreng Sakay (free ride) schedules<br/>• Discount rules for students, seniors, and PWD<br/><br/>What would you like to know?</div>
-        </div>
-      </div>
-      <div class="chat-bar">
-        <input type="text" id="chatInput" placeholder="e.g. How much from Lahug to SM?" onkeydown="if(event.key==='Enter') sendChat()" />
-        <button class="send-btn" onclick="sendChat()">Send →</button>
-      </div>
-    </div>
-
-    <div class="flex flex-wrap gap-1" style="margin-top:1rem;">
-      <button class="btn-ghost" onclick="quickAsk('What is the base fare for modern jeepneys?')">Modern base fare?</button>
-      <button class="btn-ghost" onclick="quickAsk('What is the route of 01K?')">Route 01K?</button>
-      <button class="btn-ghost" onclick="quickAsk('How to get from Colon to IT Park?')">Colon → IT Park?</button>
-      <button class="btn-ghost" onclick="quickAsk('Who gets free rides?')">Free ride details?</button>
     </div>
   </section>
 
@@ -724,25 +721,8 @@
         <h4>DOTr / National Government</h4>
         <p><strong>Route:</strong> Urgello ↔ Parkmall (01K) via Colon, SM, North Bus Terminal<br/>
         <strong>Fleet:</strong> 100+ modern jeepneys under service contract<br/>
-        <strong>Schedule:</strong> 6:00–9:00 AM &amp; 5:00–8:00 PM daily (incl. weekends)</p>
+        <strong>Schedule:</strong> 6:00–9:00 AM &amp; 5:00–8:00 PM daily</p>
       </div>
-      <div class="libreng-card">
-        <h4>Mandaue City LGU Expansion</h4>
-        <p>3 electric vehicle routes:<br/>
-        1. A. Del Rosario St. ↔ Maguikay<br/>
-        2. KFC Maguikay ↔ Savemore Canduman<br/>
-        3. Savemore Canduman ↔ Mandaue City School for the Arts<br/>
-        <strong>Schedule:</strong> 6:00–9:00 AM &amp; 4:00–7:00 PM</p>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2 style="font-family:'Syne',sans-serif; font-size:1.1rem; margin-bottom:0.8rem;">Key Transport Policies</h2>
-      <p style="margin-bottom:0.8rem;"><strong style="color:var(--text);">Tabang Pangbyahe Program</strong><br/>
-      A DOTr‑Cebu Provincial Government initiative that subsidises operators on low‑demand routes to prevent commuter stranding. Vehicles are required to have GPS tracking linked to LGU command centres.</p>
-      <hr style="border:0; border-top:1px solid var(--border); margin:0.8rem 0;" />
-      <p><strong style="color:var(--text);">PUV Modernisation</strong><br/>
-      Only consolidated cooperatives are issued franchises. Traditional jeepneys are allowed only if part of a cooperative actively transitioning to Euro‑4 or electric fleets.</p>
     </div>
   </section>
 </main>
@@ -750,388 +730,284 @@
 <script>
   // ─── ROUTE DATABASE ──────────────────────────────────────────────
   const ROUTES = [
-    // 01 Series
     { code: '01B', zone: '01', name: 'Urgello ↔ Colon ↔ Pier Area', desc: 'via Leon Kilat, Sanciangko', stops: ['Urgello','SWU','Leon Kilat St','Sanciangko','Metro Colon','Pier Area','Pier 1','Pier 4'] },
     { code: '01C', zone: '01', name: 'Private ↔ Colon ↔ Pier Area', desc: 'via P. Del Rosario, White Gold', stops: ['Private','P. Del Rosario','USC Main','Colon St','White Gold Club','Pier Area'] },
     { code: '01G', zone: '01', name: 'Sambag I (USC-GH) ↔ SM City Cebu', desc: 'via Taboan, Colon', stops: ['Sambag I','USC Girls High','Taboan Market','B. Rodriguez','Colon St','SM City Cebu'] },
     { code: '01H', zone: '01', name: 'Sambag II (SWU) ↔ SM City Cebu', desc: 'via Taboan, Colon, MJ Cuenco', stops: ['Sambag II','SWU','Taboan Market','Colon St','MJ Cuenco','SM City Cebu'] },
     { code: '01I', zone: '01', name: 'Sambag II (SWU) ↔ SM City ↔ Ayala', desc: 'Direct main loop', stops: ['Sambag II','SWU','Colon St','SM City Cebu','Ayala Center Cebu'] },
     { code: '01K', zone: '01', name: 'Urgello ↔ Parkmall (Free Ride)', desc: 'via Colon, SM, North Bus Terminal — LIBRENG SAKAY', stops: ['Urgello','Colon St','SM City Cebu','North Bus Terminal','Parkmall Mandaue'] },
-    // 02-03
     { code: '02B', zone: '02-03', name: 'South Bus Terminal ↔ Pier Area', desc: 'via CCMC, Panganiban, Colon, Piers 1–4', stops: ['South Bus Terminal','CCMC','Panganiban St','Colon St','Pier 1','Pier 3','Pier 4'] },
     { code: '03A', zone: '02-03', name: 'Mabolo (Panagdait) ↔ Carbon Market', desc: 'via MJ Cuenco, Victoria Plaza', stops: ['Mabolo Panagdait','Victoria Plaza','MJ Cuenco','Caretta','Carbon Market'] },
     { code: '03B', zone: '02-03', name: 'Mabolo ↔ Carbon Market', desc: 'via Ayala, Gorordo, Fuente, Jones Ave', stops: ['Mabolo','Ayala Center Cebu','Gorordo Ave','Fuente Osmeña','Jones Ave','Carbon Market'] },
-    { code: '03C', zone: '02-03', name: 'Mabolo ↔ Carbon Market Loop', desc: 'via Gen. Maxilom, MJ Cuenco', stops: ['Mabolo','Gen. Maxilom','Imus Ave','MJ Cuenco','Carbon Market'] },
-    { code: '03G', zone: '02-03', name: 'Mabolo (Gochan) ↔ Carbon Market', desc: 'via Cebu North Road, MJ Cuenco', stops: ['Mabolo Gochan','Cebu North Road','MJ Cuenco','Carbon Market'] },
-    { code: '03K', zone: '02-03', name: 'Mabolo ↔ Ayala ↔ Colon ↔ SM City', desc: 'Inter-mall connector', stops: ['Mabolo','Ayala Center Cebu','Colon St','SM City Cebu'] },
-    { code: '03L', zone: '02-03', name: 'Mabolo (Luyo/Cabantan) ↔ Carbon Market', desc: 'Local Cabantan bypass', stops: ['Cabantan St','Mabolo Luyo','MJ Cuenco','Carbon Market'] },
-    { code: '03Q', zone: '02-03', name: 'Ayala Center ↔ SM City Cebu Loop', desc: 'Direct mall-to-mall via Juan Luna Ave', stops: ['Ayala Center Cebu','Juan Luna Ave','SM City Cebu'] },
-    // 04-05
     { code: '04A', zone: '04-05', name: 'Lahug ↔ Carbon Market', desc: 'via Juana Osmeña, Ramos St, Fuente', stops: ['Lahug','JY Square','Juana Osmeña','F. Ramos St','Fuente Osmeña','Carbon Market'] },
     { code: '04B', zone: '04-05', name: 'Lahug (Camp Lapu-Lapu) ↔ Carbon Market', desc: 'via JY Square, Capitol, Jones Ave', stops: ['Camp Lapu-Lapu','JY Square','Gorordo Ave','Capitol Site','Jones Ave','Carbon Market'] },
-    { code: '04C', zone: '04-05', name: 'Plaza Housing (Busay) ↔ Carbon Market', desc: 'via Gorordo, Ramos, Sanciangko', stops: ['Plaza Housing Busay','JY Square','Gorordo Ave','Ramos St','Sanciangko','Carbon Market'] },
-    { code: '04G', zone: '04-05', name: 'Lahug ↔ Ayala ↔ Colon', desc: 'via MJ Cuenco', stops: ['Lahug','JY Square','Ayala Center Cebu','MJ Cuenco','Colon St'] },
-    { code: '04H', zone: '04-05', name: 'Plaza Housing ↔ Carbon Market', desc: 'via N. Escario', stops: ['Plaza Housing','JY Square','N. Escario St','Fuente Osmeña','Carbon Market'] },
-    { code: '04L', zone: '04-05', name: 'Lahug (JY Square) ↔ SM City Cebu', desc: 'via IT Park, Ayala Center, Juan Luna Ave', stops: ['Lahug JY Square','IT Park','Ayala Center Cebu','Juan Luna Ave','SM City Cebu'] },
-    { code: '04M', zone: '04-05', name: 'Lahug ↔ Ayala Center', desc: 'via UP Cebu, JY Square, Escario', stops: ['Lahug','JY Square','UP Cebu','Escario St','Ayala Center Cebu'] },
-    { code: '05A', zone: '04-05', name: 'Englis ↔ Carbon Market', desc: 'via V. Rama Ave', stops: ['Englis','V. Rama Ave','Guadalupe Bridge','Calamba','Carbon Market'] },
-    // 06-07
-    { code: '06A', zone: '06-07', name: 'Guadalupe ↔ Carbon Market', desc: 'via V. Rama, Tres de Abril, Taboan', stops: ['Guadalupe Church','V. Rama Ave','Tres de Abril','Taboan Market','Carbon Market'] },
-    { code: '06B', zone: '06-07', name: 'Guadalupe ↔ Carbon Market', desc: 'via M. Velez, Capitol, Fuente, Osmeña Blvd', stops: ['Guadalupe','M. Velez St','Capitol Site','Fuente Osmeña','Osmeña Blvd','Carbon Market'] },
-    { code: '06C', zone: '06-07', name: 'Guadalupe ↔ Carbon Market', desc: 'via B. Rodriguez, Vicente Sotto Hospital', stops: ['Guadalupe','M. Velez St','B. Rodriguez St','VSMMC','Carbon Market'] },
-    { code: '06D', zone: '06-07', name: 'Guadalupe (Singson) ↔ Colon', desc: 'via Andres Abellana, Junquera', stops: ['Singson Village','Andres Abellana','V. Rama','Junquera St','Colon St'] },
-    { code: '06H', zone: '06-07', name: 'Guadalupe ↔ Ayala ↔ SM City', desc: 'via V. Rama, Mango Ave, Escario', stops: ['Guadalupe','V. Rama','Escario St','Mango Ave','Ayala Center Cebu','SM City Cebu'] },
-    { code: '06K', zone: '06-07', name: 'Napo ↔ Guadalupe ↔ Carbon Market', desc: 'Upland Napo feeder', stops: ['Napo Upland','Guadalupe Church','M. Velez St','Fuente Osmeña','Carbon Market'] },
-    { code: '07B', zone: '06-07', name: 'Banawa ↔ Carbon Market', desc: 'via Duterte St, B. Rodriguez, Fuente, Jones Ave', stops: ['Banawa','Duterte St','B. Rodriguez St','Fuente Osmeña','Jones Ave','Carbon Market'] },
-    { code: '07D', zone: '06-07', name: 'Banawa ↔ Carbon Market', desc: 'via V. Rama, Downtown loop', stops: ['Banawa','V. Rama Ave','Calamba St','Colon St','Carbon Market'] },
-    // 08-11
-    { code: '08F', zone: '08-11', name: 'Alumnos (Mambaling) ↔ Colon ↔ SM City', desc: 'via C. Padilla', stops: ['Alumnos Mambaling','C. Padilla St','Carlock St','Colon St','MJ Cuenco','SM City Cebu'] },
-    { code: '08G', zone: '08-11', name: 'Alumnos ↔ Colon', desc: 'via C. Padilla, Tupas St, Manalili', stops: ['Alumnos','C. Padilla St','Tupas St','Manalili St','Metro Colon'] },
-    { code: '09A', zone: '08-11', name: 'Basak (Bayanihan) ↔ Carbon ↔ Colon', desc: 'via Carlock, Tupas', stops: ['Basak Bayanihan','N. Bacalso','Carlock St','Tupas St','Carbon Market','Colon St'] },
-    { code: '09C', zone: '08-11', name: 'Basak ↔ Colon', desc: 'via N. Bacalso, Shopwise, CCMC, Metro Colon', stops: ['Basak Pardo','Shopwise','N. Bacalso','CCMC','Metro Colon'] },
-    { code: '09F', zone: '08-11', name: 'Basak ↔ Junquera ↔ Carbon', desc: 'via N. Bacalso, Santo Rosario', stops: ['Basak','N. Bacalso','Sanciangko','Junquera St','Santo Rosario','Carbon Market'] },
-    { code: '09G', zone: '08-11', name: 'Basak ↔ Colon', desc: 'via Tagunol, C. Padilla', stops: ['Basak','Tagunol St','C. Padilla St','Magallanes St','Colon St'] },
-    { code: '09J', zone: '08-11', name: 'Basak (Ibabao) ↔ SM City Cebu', desc: 'via Panganiban, Magallanes', stops: ['Basak Ibabao','N. Bacalso','Panganiban St','Magallanes St','SM City Cebu'] },
-    { code: '10C', zone: '08-11', name: 'Pardo ↔ Colon', desc: 'via Imus Ave, Panganiban', stops: ['Pardo Church','N. Bacalso','Imus Ave','Panganiban St','Colon St'] },
-    { code: '10F', zone: '08-11', name: 'Bulacao ↔ Pardo ↔ Colon', desc: 'via N. Bacalso, Junquera', stops: ['Bulacao Terminal','Pardo','N. Bacalso','USC Main','Junquera St','Colon St'] },
-    { code: '10H', zone: '08-11', name: 'Bulacao ↔ SM City Cebu', desc: 'via Pardo, CIT, N. Bacalso, Colon', stops: ['Bulacao','Pardo','CIT University','N. Bacalso','Colon St','SM City Cebu'] },
-    { code: '10M', zone: '08-11', name: 'Bulacao ↔ Colon ↔ SM City', desc: 'via Mambaling, MJ Cuenco', stops: ['Bulacao','Mambaling','N. Bacalso','Colon St','MJ Cuenco','SM City Cebu'] },
-    { code: '11A', zone: '08-11', name: 'Inayawan ↔ Colon', desc: 'via Inayawan Market, C. Padilla, Magallanes', stops: ['Inayawan Market','C. Padilla St','Pasil','Magallanes St','Colon St'] },
-    { code: '11D', zone: '08-11', name: 'Inayawan ↔ Colon ↔ Manalili', desc: 'via Pardo, N. Bacalso, Tabuan', stops: ['Inayawan','Pardo','N. Bacalso','Tabuan Market','Manalili St','Colon St'] },
-    // 12
-    { code: '12B', zone: '12', name: 'Labangon ↔ Colon', desc: 'via Katipunan St, USC Main', stops: ['Labangon','Katipunan St','J. Alcantara','P. Del Rosario','USC Main','Colon St'] },
-    { code: '12C', zone: '12', name: 'Labangon ↔ Colon Loop', desc: 'via Tres de Abril', stops: ['Labangon','Katipunan St','Tres de Abril','Sanciangko','Colon St Loop'] },
-    { code: '12D', zone: '12', name: 'Labangon ↔ Colon', desc: 'via Sikatuna, P. Del Rosario', stops: ['Labangon','J. Alcantara','P. Del Rosario','Sikatuna St','Colon St'] },
-    { code: '12E', zone: '12', name: 'Labangon ↔ SM City ↔ North Bus Terminal', desc: 'via P. Del Rosario', stops: ['Labangon','P. Del Rosario','Imus Ave','SM City Cebu','North Bus Terminal'] },
-    { code: '12G', zone: '12', name: 'Labangon ↔ SM City Cebu', desc: 'via Taboan, Carbon, Colon', stops: ['Labangon','Taboan Market','Carbon Market','Colon St','MJ Cuenco','SM City Cebu'] },
-    { code: '12K', zone: '12', name: 'Labangon ↔ Ayala Center', desc: 'via A. Lopez, B. Rodriguez, Gen. Maxilom', stops: ['Labangon A. Lopez','B. Rodriguez St','VSMMC','Gen. Maxilom','Ayala Center Cebu'] },
-    { code: '12L', zone: '12', name: 'Labangon ↔ Ayala Center', desc: 'via Katipunan, J. Alcantara, Escario', stops: ['Labangon','Katipunan St','J. Alcantara','Escario St','Ayala Center Cebu'] },
-    { code: '12M', zone: '12', name: 'Labangon ↔ Colon ↔ Magallanes', desc: 'via Legaspi St', stops: ['Labangon','Katipunan','Sanciangko','Legaspi St','Magallanes St','Colon St'] },
-    // 13-17
-    { code: '13A', zone: '13-17', name: 'Talamban ↔ Capitol ↔ USJR', desc: 'via Banilad, Gov. Cuenco', stops: ['Talamban Tintay','Banilad','Gov. Cuenco','Capitol Site','USJR Main'] },
-    { code: '13B', zone: '13-17', name: 'Talamban ↔ Carbon Market', desc: 'via Echavez St', stops: ['Talamban','Banilad','Gov. Cuenco','Echavez St','Ramos St','Carbon Market'] },
-    { code: '13C', zone: '13-17', name: 'Talamban (Tintay) ↔ Colon', desc: 'via Banilad, Country Mall, Ayala, Sikatuna', stops: ['Talamban Tintay','Country Mall','Ayala Center Cebu','Sikatuna St','Colon St'] },
-    { code: '14B', zone: '13-17', name: 'Capitol Site ↔ Colon', desc: 'via Jones Ave', stops: ['Capitol Site','Fuente Osmeña','Jones Ave','Cebu Normal','Colon St'] },
-    { code: '14D', zone: '13-17', name: 'Capitol ↔ Ayala ↔ Colon', desc: 'via Escario St, F. Ramos St', stops: ['Capitol Site','Escario St','Ayala Center Cebu','F. Ramos St','Colon St'] },
-    { code: '15',  zone: '13-17', name: 'OPRRA ↔ Carbon Market', desc: 'via Malunggay St, Capitol, Osmeña Blvd', stops: ['OPRRA Hills','Malunggay St','Capitol Site','Osmeña Blvd','Carbon Market'] },
-    { code: '17B', zone: '13-17', name: 'Apas (IT Park) ↔ Carbon Market', desc: 'via Lahug, Escario, Capitol, Jones Ave', stops: ['Apas Terminal','IT Park','Lahug','Escario St','Capitol','Jones Ave','Carbon Market'] },
-    { code: '17C', zone: '13-17', name: 'Apas (IT Park) ↔ Carbon Market', desc: 'via Ramos St, Mango Ave, D. Jakosalem', stops: ['Apas','IT Park','Mango Ave','F. Ramos St','D. Jakosalem','Carbon Market'] },
-    { code: '17D', zone: '13-17', name: 'Apas ↔ Lahug ↔ Carbon Market', desc: 'via Escario St', stops: ['Apas','Lahug JY','Escario St','Fuente Osmeña','Carbon Market'] },
-    { code: '62B', zone: '13-17', name: 'Pit-os ↔ Talamban ↔ Colon', desc: 'via Banilad Flyover, Sikatuna', stops: ['Pit-os','Talamban','Banilad Flyover','Sikatuna St','Colon St'] },
-    { code: '62C', zone: '13-17', name: 'Pit-os ↔ Talamban ↔ Carbon Market', desc: 'via Echavez St', stops: ['Pit-os','Talamban','Gov. Cuenco','Echavez St','Downtown','Carbon Market'] },
-    // 20+
-    { code: '20A', zone: '20+', name: 'Mandaue (Pacific Mall) ↔ Ayala Center', desc: 'via A.S. Fortuna, Subangdaku', stops: ['Pacific Mall','A.S. Fortuna','Subangdaku','Hernan Cortes','Ayala Center Cebu'] },
-    { code: '20B', zone: '20+', name: 'Mandaue ↔ Ayala Center', desc: 'via Mabolo, Logarta St', stops: ['Mandaue Centro','Logarta St','Subangdaku','Mabolo','Ayala Center Cebu'] },
-    { code: '21A', zone: '20+', name: 'Mandaue (Centro) Loop', desc: 'via City Hall, Tipolo', stops: ['Mandaue City Hall','Centro','Tipolo','Subangdaku Loop'] },
-    { code: '21B', zone: '20+', name: 'Mandaue (Ibabao) ↔ Ayala ↔ Jones Ave', desc: 'via Tipolo, Mabolo', stops: ['Ibabao Mandaue','Tipolo','Mabolo','Ayala Center Cebu','Jones Ave'] },
-    { code: '22A', zone: '20+', name: 'Mandaue ↔ Manalili', desc: 'Direct downtown link', stops: ['Mandaue Centro','Tipolo','MJ Cuenco','Manalili St Downtown'] },
-    { code: '22B', zone: '20+', name: 'Mandaue (Ouano) ↔ Ayala ↔ Jones Ave', desc: 'Port-to-commercial', stops: ['Ouano Wharf','Plaridel St','Ayala Center Cebu','Jones Ave'] },
-    { code: '22I', zone: '20+', name: 'Mandaue Market ↔ Country Mall', desc: 'via A.S. Fortuna', stops: ['Mandaue Market','A.S. Fortuna','Banilad','Country Mall'] },
-    { code: '23D', zone: '20+', name: 'Lapu-Lapu City (MEPZ) ↔ SM City Cebu', desc: 'via Old Mactan Bridge', stops: ['Opon Mercado','MEPZ 1','Old Mactan Bridge','Mandaue Highway','SM City Cebu'] },
-    { code: '24A', zone: '20+', name: 'Consolacion ↔ SM City Cebu / North Bus', desc: 'Northern corridor', stops: ['Consolacion Market','Cansaga','Rizal St','SM City Cebu'] },
-    { code: '24G', zone: '20+', name: 'Consolacion ↔ Talamban', desc: 'Inter-valley connector', stops: ['Consolacion','Canduman Road','Pagsabungan','Talamban'] },
-    { code: '25',  zone: '20+', name: 'Liloan ↔ SM City Cebu / White Gold', desc: 'Northern provincial artery', stops: ['Liloan Church','Consolacion Highway','Mandaue Centro','SM City Cebu','White Gold Club'] },
-    { code: '27',  zone: '20+', name: 'Danao City ↔ Cebu City (SM / North Bus)', desc: 'Long-distance rapid service', stops: ['Danao Terminal','Compostela','Liloan','Consolacion','SM City / North Bus'] },
-    { code: '41',  zone: '20+', name: 'Tabunok (Talisay) ↔ Colon', desc: 'Southern boundary link', stops: ['Tabunok Talisay','Bulacao','N. Bacalso','Metro Colon'] },
-    { code: '42',  zone: '20+', name: 'Talisay City ↔ Colon', desc: 'via N. Bacalso / Tabunok', stops: ['Talisay Proper','Tabunok Market','N. Bacalso','Sanciangko','Colon St'] },
-    { code: '43',  zone: '20+', name: 'Minglanilla ↔ Colon', desc: 'South coastal link', stops: ['Minglanilla Market','Talisay City','Tabunok','N. Bacalso','Colon St'] },
-    { code: '44',  zone: '20+', name: 'Naga City ↔ Colon', desc: 'Industrial south connector', stops: ['Naga Boardwalk','Minglanilla','Talisay','Bulacao','Colon St'] },
-    { code: '45',  zone: '20+', name: 'San Fernando ↔ Colon', desc: 'Provincial southern corridor', stops: ['San Fernando','Naga City','Minglanilla','N. Bacalso','Colon St'] },
-    { code: '46',  zone: '20+', name: 'Carcar City ↔ Colon', desc: 'Heritage express line', stops: ['Carcar','San Fernando','Naga City','Minglanilla','Colon St'] }
+    { code: '04C', zone: '04-05', name: 'Plaza Housing Busay ↔ Carbon Market', desc: 'via Gorordo, Ramos, Sanciangko', stops: ['Plaza Housing Busay','JY Square','Gorordo Ave','F. Ramos St','Carbon Market'] }
   ];
 
-  // ─── APP STATE ──────────────────────────────────────────────────
-  let currentVehicle = 'trad'; // 'trad' or 'mod'
-  let currentRouteCode = '';
+  let currentVehicleType = 'trad';
 
-  // ─── NAVIGATION ──────────────────────────────────────────────────
-  function navigate(page) {
-    document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-    document.getElementById('page-' + page).classList.add('active');
-    document.getElementById('nav-' + page).classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  // ─── APPARATUS NAVIGATION ────────────────────────────────────────
+  function navigate(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    
+    const targetPage = document.getElementById(`page-${pageId}`);
+    if(targetPage) targetPage.classList.add('active');
+    
+    const targetNav = document.getElementById(`nav-${pageId}`);
+    if(targetNav) targetNav.classList.add('active');
+    
+    window.scrollTo(0,0);
   }
 
-  // ─── FARE CALCULATOR ────────────────────────────────────────────
-  function populateRouteDropdown() {
-    const sel = document.getElementById('fareRoute');
-    const groups = {
-      '01': '01 — Sambag / Urgello',
-      '02-03': '02–03 — Pier / Mabolo',
-      '04-05': '04–05 — Lahug / Englis',
-      '06-07': '06–07 — Guadalupe / Banawa',
-      '08-11': '08–11 — Southern Districts',
-      '12': '12 — Labangon',
-      '13-17': '13–17 — Northern Hubs',
-      '20+': '20+ — Inter-City'
-    };
-    const containers = {};
-    for (const key in groups) {
-      const optgroup = document.createElement('optgroup');
-      optgroup.label = groups[key];
-      containers[key] = optgroup;
-    }
+  // ─── INITIALIZATION ENGINE ───────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    const fareSelect = document.getElementById('fareRoute');
     ROUTES.forEach(r => {
       const opt = document.createElement('option');
       opt.value = r.code;
       opt.textContent = `${r.code} — ${r.name}`;
-      const z = r.zone;
-      if (containers[z]) containers[z].appendChild(opt);
-      else containers['20+'].appendChild(opt);
+      fareSelect.appendChild(opt);
     });
-    for (const key in containers) {
-      if (containers[key].children.length) sel.appendChild(containers[key]);
-    }
-  }
+    searchRoutes();
+    filterZone('all');
+  });
 
+  // ─── FARE CORE MECHANISM ─────────────────────────────────────────
   function setVehicleType(type) {
-    currentVehicle = type;
+    currentVehicleType = type;
     document.getElementById('vt-trad').classList.toggle('active', type === 'trad');
     document.getElementById('vt-mod').classList.toggle('active', type === 'mod');
-    if (document.getElementById('fareRoute').value) computeFare();
+    calculateLiveFare();
   }
 
   function onRouteChange() {
-    const code = document.getElementById('fareRoute').value;
+    const routeCode = document.getElementById('fareRoute').value;
     const stopSection = document.getElementById('stopSection');
-    const resultDiv = document.getElementById('fareResult');
-    resultDiv.classList.add('hidden');
-    if (!code) { stopSection.classList.add('hidden'); return; }
-
-    const route = ROUTES.find(r => r.code === code);
-    if (!route) return;
-    currentRouteCode = code;
-    populateStops('fromStop', route.stops);
-    populateStops('toStop', route.stops);
-    document.getElementById('toStop').selectedIndex = route.stops.length - 1;
+    const fareResult = document.getElementById('fareResult');
+    
+    if(!routeCode) {
+      stopSection.classList.add('hidden');
+      fareResult.classList.add('hidden');
+      return;
+    }
+    
+    const route = ROUTES.find(r => r.code === routeCode);
+    const fromSelect = document.getElementById('fromStop');
+    const toSelect = document.getElementById('toStop');
+    
+    fromSelect.innerHTML = '';
+    toSelect.innerHTML = '';
+    
+    route.stops.forEach((stop, idx) => {
+      const opt1 = document.createElement('option');
+      opt1.value = idx;
+      opt1.textContent = stop;
+      fromSelect.appendChild(opt1);
+      
+      const opt2 = document.createElement('option');
+      opt2.value = idx;
+      opt2.textContent = stop;
+      toSelect.appendChild(opt2);
+    });
+    
+    if(toSelect.options.length > 1) {
+      toSelect.selectedIndex = toSelect.options.length - 1;
+    }
+    
     stopSection.classList.remove('hidden');
+    buildInteractiveNodes(route);
+    calculateLiveFare();
   }
 
-  function populateStops(selectId, stops) {
-    const sel = document.getElementById(selectId);
-    sel.innerHTML = '<option value="">— Select —</option>';
-    stops.forEach((s, i) => {
-      const opt = document.createElement('option');
-      opt.value = i;
-      opt.textContent = s;
-      sel.appendChild(opt);
+  function buildInteractiveNodes(route) {
+    const wrapper = document.getElementById('mapNodesWrapper');
+    wrapper.innerHTML = '';
+    
+    route.stops.forEach((stop, index) => {
+      const node = document.createElement('div');
+      node.className = 'map-node';
+      node.id = `mapNode-${index}`;
+      node.innerHTML = `
+        <div class="map-dot"></div>
+        <div class="map-lbl">${stop}</div>
+      `;
+      wrapper.appendChild(node);
     });
   }
 
-  function computeFare() {
-    const code = document.getElementById('fareRoute').value;
-    const fromIdx = parseInt(document.getElementById('fromStop').value);
-    const toIdx = parseInt(document.getElementById('toStop').value);
-    const discounted = document.getElementById('discountToggle').checked;
-
-    if (isNaN(fromIdx) || isNaN(toIdx) || fromIdx === toIdx) {
-      alert('Please select different origin and destination stops.');
-      return;
-    }
-
-    const route = ROUTES.find(r => r.code === code);
-    if (!route) return;
-
-    const gap = Math.abs(toIdx - fromIdx);
-    const scale = route.zone === '20+' ? 2.8 : 1.25;
-    const km = +(gap * scale).toFixed(1);
-
-    let base, perKm;
-    if (currentVehicle === 'trad') { base = 14; perKm = 2; }
-    else { base = 17; perKm = 2.4; }
-
-    let fare = base;
-    if (km > 4) fare += (km - 4) * perKm;
-    fare = Math.ceil(fare * 4) / 4;
-    let discountedFare = Math.ceil((fare * 0.8) * 4) / 4;
-
-    document.getElementById('regularFare').textContent = '₱' + fare.toFixed(2);
-    const displayEl = document.getElementById('discountedFare');
-    const labelEl = document.getElementById('discountLabel');
-    if (discounted) {
-      displayEl.textContent = '₱' + discountedFare.toFixed(2);
-      labelEl.textContent = 'Discounted Fare (20% off)';
-    } else {
-      displayEl.textContent = '₱' + fare.toFixed(2);
-      labelEl.textContent = 'Your Fare';
-    }
-    document.getElementById('distanceInfo').textContent = `Estimated distance: ${km} km (${gap} stops apart)`;
-
-    const strip = document.getElementById('resultStrip');
-    strip.innerHTML = '';
-    const low = Math.min(fromIdx, toIdx);
-    const high = Math.max(fromIdx, toIdx);
-    const direction = fromIdx < toIdx ? '›' : '‹';
-    for (let i = low; i <= high; i++) {
-      const el = document.createElement('span');
-      el.className = 'rc ' + (i === low ? 'rc-start' : (i === high ? 'rc-end' : 'rc-mid'));
-      el.textContent = route.stops[i];
-      strip.appendChild(el);
-      if (i < high) {
-        const arr = document.createElement('span');
-        arr.className = 'rc-arr';
-        arr.textContent = direction;
-        strip.appendChild(arr);
-      }
-    }
-
-    const freeNote = document.getElementById('freeRideNote');
-    if (code === '01K') {
-      freeNote.classList.remove('hidden');
-      freeNote.textContent = 'This route (01K) is part of the Libreng Sakay program – free during 6–9 AM & 5–8 PM!';
-    } else {
-      freeNote.classList.add('hidden');
-    }
-
-    document.getElementById('fareResult').classList.remove('hidden');
+  function onStopSelectionChange() {
+    calculateLiveFare();
   }
 
-  // ─── ROUTE FINDER ───────────────────────────────────────────────
+  function calculateLiveFare() {
+    const routeCode = document.getElementById('fareRoute').value;
+    if(!routeCode) return;
+
+    const route = ROUTES.find(r => r.code === routeCode);
+    const fromIdx = parseInt(document.getElementById('fromStop').value);
+    const toIdx = parseInt(document.getElementById('toStop').value);
+    
+    if(isNaN(fromIdx) || isNaN(toIdx)) return;
+    
+    // Update active UI map node metrics
+    const totalStops = route.stops.length;
+    const start = Math.min(fromIdx, toIdx);
+    const end = Math.max(fromIdx, toIdx);
+    
+    for(let i = 0; i < totalStops; i++) {
+      const element = document.getElementById(`mapNode-${i}`);
+      if(element) {
+        if(i >= start && i <= end) {
+          element.classList.add('active');
+        } else {
+          element.classList.remove('active');
+        }
+      }
+    }
+    
+    const progressLine = document.getElementById('mapProgressLine');
+    if(progressLine && totalStops > 1) {
+      const leftPercent = (start / (totalStops - 1)) * 100;
+      const widthPercent = ((end - start) / (totalStops - 1)) * 100;
+      progressLine.style.left = `calc(${leftPercent}% + 10px)`;
+      progressLine.style.width = `calc(${widthPercent}% - 20px)`;
+    }
+
+    // Dynamic Math Approximation Base
+    const stopDiff = Math.abs(toIdx - fromIdx);
+    const estimatedDistance = stopDiff * 1.2; // approx 1.2km per stop spacing metric
+    
+    let baseFare = currentVehicleType === 'trad' ? 14.00 : 17.00;
+    let perKmRate = currentVehicleType === 'trad' ? 2.00 : 2.40;
+    let finalRegular = baseFare;
+    
+    if(estimatedDistance > 4.0) {
+      finalRegular += (estimatedDistance - 4.0) * perKmRate;
+    }
+    
+    let finalDiscounted = finalRegular * 0.80; // 20% regulatory reduction
+    
+    // Print out variables to display window
+    document.getElementById('regularFare').textContent = `₱${finalRegular.toFixed(2)}`;
+    
+    const discountToggle = document.getElementById('discountToggle').checked;
+    if(discountToggle) {
+      document.getElementById('discountLabel').textContent = "Discounted Total";
+      document.getElementById('discountedFare').textContent = `₱${finalDiscounted.toFixed(2)}`;
+    } else {
+      document.getElementById('discountLabel').textContent = "Your Regular Fare";
+      document.getElementById('discountedFare').textContent = `₱${finalRegular.toFixed(2)}`;
+    }
+    
+    document.getElementById('distanceInfo').textContent = `Approximate distance: ${estimatedDistance.toFixed(1)} km (${stopDiff} stops linked)`;
+    
+    // Display Libreng Sakay alerts on specific codes
+    const freeRideNote = document.getElementById('freeRideNote');
+    if(routeCode === '01K') {
+      freeRideNote.classList.remove('hidden');
+    } else {
+      freeRideNote.classList.add('hidden');
+    }
+    
+    document.getElementById('fareResult').classList.remove('hidden');
+    
+    // Build route visualization track
+    const strip = document.getElementById('resultStrip');
+    strip.innerHTML = '';
+    
+    const nodeStart = document.createElement('div');
+    nodeStart.className = 'rc rc-start';
+    nodeStart.textContent = route.stops[fromIdx];
+    strip.appendChild(nodeStart);
+    
+    const arrow = document.createElement('div');
+    arrow.className = 'rc-arr';
+    arrow.textContent = '➔';
+    strip.appendChild(arrow);
+    
+    const nodeEnd = document.createElement('div');
+    nodeEnd.className = 'rc rc-end';
+    nodeEnd.textContent = route.stops[toIdx];
+    strip.appendChild(nodeEnd);
+  }
+
+  // ─── ROUTE EXPLORATION AND LOGISTICS ─────────────────────────────
   function searchRoutes() {
-    const q = document.getElementById('routeSearch').value.trim().toLowerCase();
-    const container = document.getElementById('routeResults');
-    const none = document.getElementById('noResults');
-    const detail = document.getElementById('routeDetail');
-    detail.classList.add('hidden');
-
-    if (!q) { container.innerHTML = ''; none.classList.add('hidden'); return; }
-
-    const matches = ROUTES.filter(r =>
-      r.code.toLowerCase().includes(q) ||
-      r.name.toLowerCase().includes(q) ||
-      r.desc.toLowerCase().includes(q) ||
-      r.stops.some(s => s.toLowerCase().includes(q))
-    );
-
-    if (!matches.length) { container.innerHTML = ''; none.classList.remove('hidden'); return; }
-    none.classList.add('hidden');
-
-    container.innerHTML = matches.slice(0, 8).map(r => `
-      <div class="route-hit" onclick="showRouteDetail('${r.code}')">
-        <div class="rh-top">
-          <span class="rh-name">${r.name}</span>
-          <span class="badge ${r.code === '01K' ? 'badge-green' : 'badge-amber'}">${r.code}</span>
-        </div>
-        <div class="rh-desc">${r.desc}</div>
-      </div>
-    `).join('');
+    const query = document.getElementById('routeSearch').value.toLowerCase();
+    const resultsContainer = document.getElementById('routeResults');
+    const noResults = document.getElementById('noResults');
+    
+    resultsContainer.innerHTML = '';
+    let hits = 0;
+    
+    ROUTES.forEach(route => {
+      const matchCode = route.code.toLowerCase().includes(query);
+      const matchName = route.name.toLowerCase().includes(query);
+      const matchDesc = route.desc.toLowerCase().includes(query);
+      const matchStops = route.stops.some(s => s.toLowerCase().includes(query));
+      
+      if(matchCode || matchName || matchDesc || matchStops) {
+        hits++;
+        const item = document.createElement('div');
+        item.className = 'route-hit';
+        item.onclick = () => showRouteDetail(route.code);
+        item.innerHTML = `
+          <div class="rh-top">
+            <span class="rh-name">${route.code} — ${route.name}</span>
+            <span class="badge ${route.code === '01K' ? 'badge-green' : 'badge-amber'}">${route.code === '01K' ? 'FREE RIDE' : 'Standard'}</span>
+          </div>
+          <div class="rh-desc">${route.desc}</div>
+        `;
+        resultsContainer.appendChild(item);
+      }
+    });
+    
+    noResults.classList.toggle('hidden', hits > 0);
   }
 
   function showRouteDetail(code) {
     const route = ROUTES.find(r => r.code === code);
-    if (!route) return;
-    const detail = document.getElementById('routeDetail');
-    document.getElementById('detailCode').textContent = `Route ${route.code} · ${route.name}`;
-    document.getElementById('detailDesc').textContent = route.desc;
-
+    if(!route) return;
+    
+    document.getElementById('detailCode').textContent = `Line Configuration for ${route.code}`;
+    document.getElementById('detailDesc').textContent = `Full Details: ${route.desc}. Traces clean coordinates along major commercial hubs.`;
+    
     const strip = document.getElementById('detailStrip');
     strip.innerHTML = '';
-    route.stops.forEach((s, i) => {
-      const el = document.createElement('span');
-      el.className = 'rc ' + (i === 0 ? 'rc-start' : (i === route.stops.length - 1 ? 'rc-end' : 'rc-mid'));
-      el.textContent = s;
-      strip.appendChild(el);
-      if (i < route.stops.length - 1) {
-        const arr = document.createElement('span');
-        arr.className = 'rc-arr';
-        arr.textContent = '›';
-        strip.appendChild(arr);
+    
+    route.stops.forEach((stop, index) => {
+      const element = document.createElement('div');
+      element.className = `rc ${index === 0 ? 'rc-start' : index === route.stops.length - 1 ? 'rc-end' : 'rc-mid'}`;
+      element.textContent = stop;
+      strip.appendChild(element);
+      
+      if(index < route.stops.length - 1) {
+        const arrow = document.createElement('div');
+        arrow.className = 'rc-arr';
+        arrow.textContent = '➔';
+        strip.appendChild(arrow);
       }
     });
-    detail.classList.remove('hidden');
-    document.querySelectorAll('.route-hit').forEach(el => el.classList.remove('sel'));
+    
+    document.getElementById('routeDetail').classList.remove('hidden');
+    document.getElementById('routeDetail').scrollIntoView({ behavior: 'smooth' });
   }
 
   function filterZone(zone) {
     const container = document.getElementById('zoneList');
     container.innerHTML = '';
+    
     const filtered = zone === 'all' ? ROUTES : ROUTES.filter(r => r.zone === zone);
-    filtered.forEach(r => {
-      const card = document.createElement('div');
-      card.className = 'card card-hover';
-      card.style.marginBottom = '0.6rem';
-      card.onclick = () => {
-        navigate('fare');
-        document.getElementById('fareRoute').value = r.code;
-        onRouteChange();
-      };
-      const badge = r.code === '01K' ? '<span class="badge badge-green">FREE</span>' : `<span class="badge badge-amber">${r.code}</span>`;
-      card.innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem;">
-          <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;">${r.name}</span>
-          ${badge}
-        </div>
-        <p style="font-size:0.8rem;color:var(--muted);">${r.desc}</p>
-        <div style="font-size:0.7rem;color:var(--muted2);margin-top:0.3rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-          ${r.stops.join(' → ')}
-        </div>
-      `;
-      container.appendChild(card);
+    
+    filtered.forEach(route => {
+      const block = document.createElement('div');
+      block.style.cssText = "background:var(--surface2); padding:0.8rem; border-radius:6px; margin-bottom:0.4rem; cursor:pointer; font-size:0.85rem;";
+      block.textContent = `[${route.code}] ${route.name}`;
+      block.onclick = () => showRouteDetail(route.code);
+      container.appendChild(block);
     });
   }
-
-  // ─── AI CHAT (Mock) ─────────────────────────────────────────────
-  function quickAsk(q) {
-    document.getElementById('chatInput').value = q;
-    sendChat();
-  }
-
-  function sendChat() {
-    const input = document.getElementById('chatInput');
-    const text = input.value.trim();
-    if (!text) return;
-    input.value = '';
-    appendMessage(text, 'user');
-
-    setTimeout(() => {
-      const reply = getAIResponse(text);
-      appendMessage(reply, 'ai');
-    }, 400 + Math.random() * 300);
-  }
-
-  function appendMessage(text, sender) {
-    const container = document.getElementById('chatMessages');
-    const div = document.createElement('div');
-    div.className = `msg ${sender}`;
-    const avatar = sender === 'ai' ? 'AI' : 'ME';
-    div.innerHTML = `
-      <div class="avatar ${sender}">${sender === 'ai' ? 'AI' : 'ME'}</div>
-      <div class="bubble">${text}</div>
-    `;
-    container.appendChild(div);
-    container.scrollTop = container.scrollHeight;
-  }
-
-  function getAIResponse(q) {
-    const lower = q.toLowerCase();
-    if (lower.includes('fare') || lower.includes('bayad') || lower.includes('pila')) {
-      if (lower.includes('modern') || lower.includes('mpuv')) {
-        return 'For **Modern Jeepneys (MPUV)**, the base fare is **₱17.00** for the first 4 km, plus **₱2.40 per additional km**. Discounted (student/senior/PWD) base is ₱13.60.';
-      } else if (lower.includes('traditional') || lower.includes('tradisyonal')) {
-        return 'For **Traditional Jeepneys**, the base fare is **₱14.00** for the first 4 km, plus **₱2.00 per additional km**. Discounted base is ₱11.20.';
-      } else {
-        return '**Latest LTFRB Fares (2026):**<br/>• Traditional: ₱14.00 base + ₱2.00/km<br/>• Modern (MPUV): ₱17.00 base + ₱2.40/km<br/>*Students, seniors, and PWD get 20% off.*';
-      }
-    } else if (lower.includes('libreng sakay') || lower.includes('free ride') || lower.includes('libre')) {
-      return '**Libreng Sakay programs:**<br/>1. **DOTr route 01K** (Urgello ↔ Parkmall) – free 6–9 AM & 5–8 PM daily.<br/>2. **Mandaue City LGU** – 3 electric routes free 6–9 AM & 4–7 PM.';
-    } else if (lower.includes('ayala') || lower.includes('13c')) {
-      return 'To Ayala Center, you can take:<br/>• From Talamban: **13C**, **62B**, or **62C**<br/>• From Lahug: **04L** or **04M**<br/>• From Mandaue: **20A**, **20B**, or **21B**<br/>• From Labangon: **12K** or **12L**';
-    } else if (lower.includes('01k')) {
-      return 'Route **01K** runs from Urgello ↔ Colon St. ↔ SM City Cebu ↔ North Bus Terminal ↔ Parkmall Mandaue. It is also part of the Libreng Sakay program during peak hours!';
-    } else if (lower.includes('colon') && lower.includes('it park')) {
-      return 'From Colon to IT Park, you can take **Route 17B** (Apas – Carbon) or **Route 17C** (Apas – Carbon via Mango Ave). Both pass through IT Park. Fare is about ₱16–₱18 depending on traffic.';
-    } else {
-      return 'I can help with jeepney routes, fares, and free ride programs in Metro Cebu. Try asking something like "What is the fare from Lahug to SM?" or "Route 01K".';
-    }
-  }
-
-  // ─── INIT ────────────────────────────────────────────────────────
-  document.addEventListener('DOMContentLoaded', () => {
-    populateRouteDropdown();
-    filterZone('all');
-  });
 </script>
-
 </body>
 </html>
